@@ -19,8 +19,7 @@ export function Post({ author, content, pubDate }) {
 
   function handleCreateComment() {
     event.preventDefault();
-    console.log("oiiiiiiiiiiiiii");
-    setComment([...comment, comment.length + 1])
+    setComment([...comment, comment.length + 1]);
   }
 
   return (
