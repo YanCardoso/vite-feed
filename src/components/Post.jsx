@@ -1,37 +1,59 @@
+import { format, formatDistanceToNow } from "date-fns";
+import ptBR from "date-fns/locale/pt-BR";
+import { useState } from "react";
 import { Avatar } from "./Avatar";
 import { Comment } from "./Comment";
 import styles from "./Post.module.css";
-export function Post() {
+
+export function Post({ author, content, pubDate }) {
+  const [comment, setComment] = useState([1, 2]);
+
+  const pubDateFormat = format(pubDate, "d 'de' LLLL 'às' HH:mm'h'", {
+    locale: ptBR,
+  });
+
+  const dateElementRelativeToNow = formatDistanceToNow(pubDate, {
+    locale: ptBR,
+    addSuffix: "há",
+  });
+
+  function handleCreateComment() {
+    event.preventDefault();
+    console.log("oiiiiiiiiiiiiii");
+    setComment([...comment, comment.length + 1])
+  }
+
   return (
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <Avatar src='https://github.com/yancardoso.png' />
+          <Avatar hasBorder src={author.avatarUrl} />
           <div className={styles.authorInfo}>
-            <strong>Yan Cardoso</strong>
-            <span>Web Developer</span>
+            <strong>{author.name}</strong>
+            <span>{author.role}</span>
           </div>
         </div>
 
-        <time dateTime="2022-05-11 00:46:37">Publicado há 1h</time>
+        <time title={pubDateFormat} dateTime={pubDateFormat}>
+          {dateElementRelativeToNow}
+        </time>
       </header>
 
       <div className={styles.content}>
-        <p>Salve galera!</p>
-
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis
-          aperiam assumenda neque suscipit possimus earum natus, quos labore
-          autem. Non ipsam natus illum temporibus delectus optio repudiandae
-          error, iusto deserunt.
-        </p>
-
-        <p>
-          <a href="#">#vamo #pra #cima #clã</a>
-        </p>
+        {content.map((line) => {
+          if (line.type === "paragraph") {
+            return <p>{line.content}</p>;
+          } else if (line.type === "link") {
+            return (
+              <p>
+                <a>{line.content}</a>
+              </p>
+            );
+          }
+        })}
       </div>
 
-      <form className={styles.commentForm}>
+      <form onSubmit={handleCreateComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
         <textarea placeholder="Deixe um comentário" />
         <footer>
@@ -40,9 +62,9 @@ export function Post() {
       </form>
 
       <div className={styles.commentList}>
-        <Comment />
-        <Comment />
-        <Comment />
+        {comment.map((comment) => {
+          return <Comment content={comment} />;
+        })}
       </div>
     </article>
   );
