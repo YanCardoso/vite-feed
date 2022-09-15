@@ -6,7 +6,11 @@ import { Comment } from "./Comment";
 import styles from "./Post.module.css";
 
 export function Post({ author, content, pubDate }) {
-  const [comment, setComment] = useState([1, 2]);
+  const [comment, setComment] = useState([
+    "Muito bom! Nice trabalho",
+    "Simplesmente incrível",
+  ]);
+  const [newCommentText, setNewCommentText] = useState("");
 
   const pubDateFormat = format(pubDate, "d 'de' LLLL 'às' HH:mm'h'", {
     locale: ptBR,
@@ -19,8 +23,28 @@ export function Post({ author, content, pubDate }) {
 
   function handleCreateComment() {
     event.preventDefault();
-    setComment([...comment, comment.length + 1]);
+    setComment([...comment, newCommentText]);
+    setNewCommentText("");
   }
+
+  function newTextComment() {
+    event.target.setCustomValidity('')
+    setNewCommentText(event.target.value);
+  }
+
+  function deleteComment(commentId) {
+    const newListComments = comment.filter((comment) => {
+      return comment !== commentId;
+    });
+
+    setComment(newListComments);
+  }
+
+  function newCommentInvalid() {
+    event.target.setCustomValidity("Campo obrigatório")
+  }
+
+  const isNewCommentEmpty = newCommentText.length === 0;
 
   return (
     <article className={styles.post}>
@@ -54,15 +78,21 @@ export function Post({ author, content, pubDate }) {
 
       <form onSubmit={handleCreateComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
-        <textarea placeholder="Deixe um comentário" />
+        <textarea
+          value={newCommentText}
+          onChange={newTextComment}
+          onInvalid={newCommentInvalid}
+          placeholder="Deixe um comentário"
+          required
+        />
         <footer>
-          <button type="submit">Comentar</button>
+          <button disabled={isNewCommentEmpty} type="submit">Comentar</button>
         </footer>
       </form>
 
       <div className={styles.commentList}>
         {comment.map((comment) => {
-          return <Comment content={comment} />;
+          return <Comment onDeleteComment={deleteComment} content={comment} />;
         })}
       </div>
     </article>
