@@ -1,4 +1,4 @@
-import { Header } from "./components/Header.jsx";
+import { Header } from "./components/Header.js";
 
 import "./styles/global.css";
 import styles from "./App.module.css";

@@ -1,11 +1,30 @@
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
-import { useState } from "react";
+import { ChangeEvent, FormEvent, InvalidEvent, useState } from "react";
 import { Avatar } from "./Avatar";
 import { Comment } from "./Comment";
 import styles from "./Post.module.css";
 
-export function Post({ author, content, pubDate }) {
+interface PostProps {
+  id: number;
+  author: Author
+  pubDate: Date;
+  content: ContentProps[]
+
+}
+
+interface ContentProps {
+  type: 'paragraph' | 'link'
+  content: string
+}
+
+interface Author {
+  avatarUrl: string;
+  role: string;
+  name: string;
+}
+
+export function Post({ author, content, pubDate }: PostProps) {
   const [comment, setComment] = useState([
     "Muito bom! Nice trabalho",
     "Simplesmente incrível",
@@ -21,18 +40,18 @@ export function Post({ author, content, pubDate }) {
     addSuffix: "há",
   });
 
-  function handleCreateComment() {
+  function handleCreateComment(event: FormEvent) {
     event.preventDefault();
     setComment([...comment, newCommentText]);
     setNewCommentText("");
   }
 
-  function newTextComment() {
-    event.target.setCustomValidity('')
+  function newTextComment(event: ChangeEvent<HTMLTextAreaElement>) {
+    event.target.setCustomValidity("");
     setNewCommentText(event.target.value);
   }
 
-  function deleteComment(commentId) {
+  function deleteComment(commentId: string) {
     const newListComments = comment.filter((comment) => {
       return comment !== commentId;
     });
@@ -40,8 +59,8 @@ export function Post({ author, content, pubDate }) {
     setComment(newListComments);
   }
 
-  function newCommentInvalid() {
-    event.target.setCustomValidity("Campo obrigatório")
+  function newCommentInvalid(event: InvalidEvent<HTMLTextAreaElement>) {
+    event.target.setCustomValidity("Campo obrigatório");
   }
 
   const isNewCommentEmpty = newCommentText.length === 0;
@@ -86,7 +105,9 @@ export function Post({ author, content, pubDate }) {
           required
         />
         <footer>
-          <button disabled={isNewCommentEmpty} type="submit">Comentar</button>
+          <button disabled={isNewCommentEmpty} type="submit">
+            Comentar
+          </button>
         </footer>
       </form>
 
